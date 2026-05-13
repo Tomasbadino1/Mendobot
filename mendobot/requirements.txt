@@ -1,0 +1,3 @@
+# Dependencias iniciales para MVP por consola.
+# Se pueden ampliar en fases de NLP y UI 3D.
+scikit-learn

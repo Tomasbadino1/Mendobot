@@ -1,0 +1,23 @@
+{
+  "institucion": "Universidad Nacional",
+  "carreras": [
+    {
+      "id": "TDS",
+      "nombre": "Técnico Universitario en Desarrollo de Software",
+      "descripcion": "Una carrera enfocada en el ciclo de vida del software, programación y metodologías ágiles.",
+      "modalidad": "Presencial",
+      "duracion": "3 años",
+      "sedes": ["Mendoza", "Río Cuarto", "San Rafael"]
+    }
+  ],
+  "faq": [
+    {
+      "pregunta": "sedes",
+      "respuesta": "La carrera se dicta en la sede de Río Cuarto."
+    },
+    {
+      "pregunta": "modalidad",
+      "respuesta": "La modalidad actual del Técnico en Desarrollo de Software es presencial."
+    }
+  ]
+}
