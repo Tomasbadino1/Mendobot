@@ -1,0 +1,276 @@
+{
+  "institucion": "Universidad de Mendoza",
+  "carreras": [
+    {
+      "id": "TDS",
+      "nombre": "Tecnicatura Universitaria en Desarrollo de Software",
+      "descripcion": "Carrera presencial de tres años orientada a producir software con lenguajes y herramientas de alto nivel, modificar y mantener programas informáticos, evaluar y seleccionar lenguajes de programación y arquitecturas de software, e integrar equipos de desarrollo.",
+      "modalidad": "Presencial",
+      "duracion": "3 años",
+      "horario": "Lunes a viernes de 18:00 a 22:00 hs",
+      "estado_inscripcion": "Abierta",
+      "sedes": ["Sede Río Cuarto"],
+      "objetivos_formativos": [
+        "Producir software utilizando lenguajes y herramientas de alto nivel",
+        "Modificar y mantener programas informáticos",
+        "Evaluar y seleccionar lenguajes de programación",
+        "Seleccionar arquitecturas de software",
+        "Integrar equipos de desarrollo de software"
+      ],
+      "competencias_tecnicas": [
+        "Programación orientada a objetos (POO)",
+        "Algoritmos y estructuras de datos",
+        "Bases de datos",
+        "Ingeniería de software",
+        "Testing",
+        "Arquitectura de software"
+      ],
+      "roles_laborales": [
+        "Desarrollador backend",
+        "Desarrollador frontend",
+        "Programador Full Stack",
+        "Tester QA",
+        "Analista junior",
+        "Soporte técnico",
+        "Desarrollo mobile"
+      ],
+      "cursillo_preuniversitario": {
+        "inicio": "Febrero 2026",
+        "cierre": "Marzo 2026",
+        "examen_final": "Nivelatorio",
+        "modalidad": "Presencial obligatoria",
+        "caracter": "Nivelatorio"
+      },
+      "informacion_economica": {
+        "cursillo": "Pago obligatorio del cursillo preuniversitario",
+        "cuotas": "12 cuotas mensuales consecutivas desde marzo a febrero",
+        "matricula": "Matrícula anual equivalente al valor de una cuota",
+        "pago_matricula": "50% en junio y 50% en noviembre"
+      },
+      "documentacion_requerida": [
+        "Fotocopia del DNI",
+        "Partida de nacimiento actualizada",
+        "Fotocopia legalizada del certificado analítico",
+        "Constancia provisoria o constancia de alumno regular"
+      ],
+      "palabras_clave_descripcion": [
+        "oferta",
+        "planes",
+        "propuesta",
+        "de que se trata",
+        "carrera",
+        "que es",
+        "informatica",
+        "perfil",
+        "objetivos",
+        "contenidos",
+        "horario",
+        "inscripcion abierta"
+      ],
+      "palabras_clave_materias": [
+        "materias",
+        "plan",
+        "plan de estudios",
+        "correlativas",
+        "ramos",
+        "ano",
+        "asignaturas",
+        "malla",
+        "cuatrimestre",
+        "primer segundo tercer"
+      ],
+      "palabras_clave_tramites": [
+        "inscripcion",
+        "papeles",
+        "requisitos",
+        "cursillo",
+        "documentacion",
+        "tramites",
+        "analitico",
+        "partida",
+        "dni",
+        "nivelatorio"
+      ],
+      "materias": {
+        "primer_ano": [
+          "Matemática Discreta y Diseño Lógico",
+          "Álgebra y Geometría Analítica",
+          "Inglés Técnico",
+          "Informática",
+          "Análisis de Sistemas I"
+        ],
+        "segundo_ano": [
+          "Análisis de Sistemas II",
+          "Diseño de Base de Datos I",
+          "Redes de Datos",
+          "Computación I",
+          "Estadística Aplicada I",
+          "Sistemas Operativos"
+        ],
+        "tercer_ano": [
+          "Autómatas y Gramáticas",
+          "Organización",
+          "Programación",
+          "Computación II",
+          "Diseño de Base de Datos II",
+          "Economía"
+        ]
+      }
+    }
+  ],
+  "faq": [
+    {
+      "tema": "descripcion",
+      "pregunta": "descripcion carrera oferta academica tecnicatura desarrollo software planes propuesta de que se trata",
+      "palabras_clave": [
+        "que estudia",
+        "para que sirve",
+        "habla de la carrera",
+        "info general",
+        "resumen",
+        "objetivos formativos"
+      ],
+      "respuesta": "La Tecnicatura Universitaria en Desarrollo de Software (RF-01) forma profesionales para producir software con herramientas de alto nivel, mantener programas, elegir lenguajes y arquitecturas, y trabajar en equipos de desarrollo. Consultá también horarios y estado de inscripción en la base de conocimiento."
+    },
+    {
+      "tema": "materias",
+      "pregunta": "plan estudios materias anos correlativas",
+      "palabras_clave": [
+        "que materias hay",
+        "lista de materias",
+        "cuantas materias",
+        "orden",
+        "primer año",
+        "segundo año",
+        "tercer año",
+        "ramos",
+        "malla curricular"
+      ],
+      "respuesta": "Las materias del plan (RF-02) están organizadas por año (primer, segundo y tercer año). Pedime el plan completo o las materias de un año puntual."
+    },
+    {
+      "tema": "sedes",
+      "pregunta": "sedes sede rio cuarto ubicacion institucion",
+      "palabras_clave": [
+        "lugar",
+        "donde queda",
+        "ubicacion",
+        "domicilio",
+        "donde se dicta",
+        "local",
+        "campus",
+        "direccion",
+        "maps",
+        "contacto sede"
+      ],
+      "respuesta": "Información de sedes (RF-04): la carrera se dicta en la Sede Río Cuarto. Para dirección exacta, contacto y horarios de atención, usá los canales oficiales de la Universidad de Mendoza."
+    },
+    {
+      "tema": "modalidad",
+      "pregunta": "modalidad cursado presencial virtual clases horario",
+      "palabras_clave": [
+        "cursado",
+        "asistencia",
+        "ir a clase",
+        "virtual",
+        "online",
+        "distancia",
+        "aula",
+        "presencialidad",
+        "formato",
+        "horario de cursada"
+      ],
+      "respuesta": "Modalidad y cursada (RF-03): la Tecnicatura es presencial. El cursado es de lunes a viernes de 18:00 a 22:00 hs. No está pensada como cursado 100% virtual u online."
+    },
+    {
+      "tema": "duracion",
+      "pregunta": "duracion tiempo extension carrera",
+      "palabras_clave": [
+        "cuanto dura",
+        "años",
+        "plazo",
+        "extension",
+        "duracion total"
+      ],
+      "respuesta": "La Tecnicatura Universitaria en Desarrollo de Software tiene una duración de 3 años."
+    },
+    {
+      "tema": "perfil_laboral",
+      "pregunta": "perfil laboral salida empleo trabajo roles competencias",
+      "palabras_clave": [
+        "trabajo",
+        "empleo",
+        "egreso",
+        "que hace el egresado",
+        "full stack",
+        "qa",
+        "mobile",
+        "backend",
+        "frontend",
+        "bases de datos",
+        "poo",
+        "competencias"
+      ],
+      "respuesta": "Perfil y salida laboral (según análisis institucional): roles como desarrollador backend y frontend, programador Full Stack, Tester QA, analista junior, soporte técnico y desarrollo mobile. Competencias técnicas centradas en POO, algoritmos y estructuras de datos, bases de datos, ingeniería de software, testing y arquitectura de software."
+    },
+    {
+      "tema": "cursillo",
+      "pregunta": "cursillo preuniversitario ingreso febrero marzo nivelatorio cuando fechas calendario inicio cierre",
+      "palabras_clave": [
+        "cursillo",
+        "preuniversitario",
+        "ingreso",
+        "febrero",
+        "marzo",
+        "2026",
+        "nivelatorio",
+        "examen final",
+        "cuando es",
+        "cuando empieza"
+      ],
+      "respuesta": "Cursillo preuniversitario: dictado entre febrero y marzo de 2026; modalidad presencial obligatoria; examen final de carácter nivelatorio."
+    },
+    {
+      "tema": "documentacion",
+      "pregunta": "documentacion inscripcion papeles requisitos analitico partida dni necesito cuales tramitar",
+      "palabras_clave": [
+        "inscripcion",
+        "papeles",
+        "requisitos",
+        "documentacion",
+        "tramites",
+        "analitico",
+        "partida de nacimiento",
+        "dni",
+        "constancia",
+        "que llevo",
+        "documentos"
+      ],
+      "respuesta": "Documentación requerida para trámites de ingreso: fotocopia del DNI; partida de nacimiento actualizada; fotocopia legalizada del certificado analítico; constancia provisoria o constancia de alumno regular."
+    },
+    {
+      "tema": "economico",
+      "pregunta": "economico cuotas mensuales matricula pagos arancel cursillo obligatorio cuantas hay montos valores financiero cuanto sale cuanto cuesta cuanto pagar cobrar dinero",
+      "palabras_clave": [
+        "dinero",
+        "cuotas",
+        "cuota",
+        "pago",
+        "pagos",
+        "precio",
+        "costo",
+        "matricula",
+        "matricular",
+        "arancel",
+        "mensual",
+        "junio",
+        "noviembre",
+        "50 por ciento",
+        "valor",
+        "cuantas cuotas",
+        "mensualidades"
+      ],
+      "respuesta": "Información económica: el cursillo preuniversitario tiene pago obligatorio. La carrera contempla 12 cuotas mensuales consecutivas de marzo a febrero. La matrícula anual equivale al valor de una cuota y se abona en dos veces: 50% en junio y 50% en noviembre."
+    }
+  ]
+}

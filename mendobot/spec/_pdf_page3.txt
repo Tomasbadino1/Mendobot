@@ -1,0 +1,19 @@
+11. Endpoints API previstos
+•
+/api/chat
+•
+/api/voice
+•
+/api/search
+•
+/api/upload
+•
+/api/history
+•
+/api/metrics
+•
+/api/health
+12. Conclusión
+La información académica suministrada puede ser integrada directamente dentro del sistema MendoBot
+mediante embeddings semánticos y procesamiento RAG, permitiendo construir un asistente conversacional
+institucional inteligente, offline y completamente basado en tecnologías open-source.

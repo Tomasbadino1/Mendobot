@@ -14,6 +14,17 @@ class DataManager:
         self.data_path = data_path
         self._data: dict[str, Any] = {}
 
+    def cargar_datos(self) -> dict[str, Any]:
+        # implements: RF-01, RF-02
+        if not self.data_path.exists():
+            return {}
+
+        with self.data_path.open("r", encoding="utf-8") as file:
+            data: dict[str, Any] = json.load(file)
+
+        self._data = data
+        return data
+
     def load(self) -> None:
         """Carga la base de conocimiento desde archivo JSON."""
         if not self.data_path.exists():
