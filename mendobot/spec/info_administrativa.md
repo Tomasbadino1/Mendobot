@@ -1,23 +1,32 @@
-# Información administrativa (fuente consolidada)
+A continuación te compartimos información sobre la carrera:
+TECNICATURA UNIVERSITARIA EN DESARROLLO DE SOFTWARE
 
-Este archivo resume datos administrativos alineados al PDF `MendoBot_Analisis_Tecnicatura_Desarrollo_Software.pdf` cuando no hay otro documento institucional más actual.
+Los objetivos de esta carrera apuntan a que los egresados estén altamente capacitados para:
 
-## Cursillo preuniversitario
+✔️ Producir software utilizando lenguajes y herramientas de alto nivel.
+✔️ Modificar y mantener programas informáticos.
+✔️ Evaluar y seleccionar los lenguajes de programación y arquitecturas de software.
+✔️ Integrar equipos de trabajo de desarrollo de software en cualquiera de sus fases.
 
-- Inicio: febrero 2026; cierre: marzo 2026.
-- Examen final: nivelatorio.
-- Modalidad: presencial obligatoria.
+📍 La carrera se dicta bajo MODALIDAD de estudio PRESENCIAL.
+Tiene una duración de 3 AÑOS,  con asistencia de lunes a viernes en la franja horaria de 18:00 a 22:00hs.
 
-## Información económica
+Te invitamos a ingresar al PDF adjunto a este mensaje para que puedas acceder al:
+⏺️ Plan de Estudio
+⏺️ Perfil profesional
+⏺️ Campo laboral 
 
-- Pago obligatorio del cursillo preuniversitario.
-- 12 cuotas mensuales consecutivas desde marzo a febrero.
-- Matrícula anual equivalente al valor de una cuota.
-- Pago de matrícula: 50% en junio y 50% en noviembre.
+📍 INSCRIPCIONES ABIERTAS!! 
 
-## Documentación requerida
+📍 CURSILLO DE INGRESO PREUNIVERSITARIO :
+- Inicia: FEBRERO 2026
+- Cierre: MARZO 2026
+- Examen Final: NIVELATORIO
+- Modalidad: Presencial obligatorio
 
-- Fotocopia del DNI.
-- Partida de nacimiento actualizada.
-- Fotocopia legalizada del certificado analítico.
-- Constancia provisoria o constancia de alumno regular.
+📍 En la Universidad de Mendoza todo ingresante debe abonar: Cursillo PreUniversitario  + 12 cuotas mensuales consecutivas (desde marzo a febrero ) + matrícula anual que tiene el valor de una cuota mensual más, que se abona dividida en dos (50% en JUNIO y 50% en NOVIEMBRE).
+
+📍 DOCUMENTACIÓN PARA INSCRIPCIÓN :
+- Fotocopia del DNI 
+- Partida de Nacimiento actualizada
+- Fotocopia legalizada del Certificado de Analítico Completo del Colegio Secundario o Constancia Provisoria  o Constancia de alumno regular.

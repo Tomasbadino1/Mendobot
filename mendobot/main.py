@@ -6,7 +6,7 @@ from src.data_manager import DataManager
 from src.engine import MendoBotEngine
 
 # CU-01 E1: mensaje cuando la consulta no está en la base de conocimiento.
-MENSAJE_NO_ENCONTRADO = "No encontré esa carrera. ¿Podés reformular la consulta?"
+MENSAJE_NO_ENCONTRADO = "No encontré la informacion pedida. ¿Podés reformular la consulta?"
 
 
 def main() -> None:

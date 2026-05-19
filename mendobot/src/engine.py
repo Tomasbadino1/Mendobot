@@ -14,7 +14,7 @@ from src.data_manager import DataManager
 
 
 # CU-01 E1: no forzar respuesta si la similitud global es baja o hay empate ambiguo.
-_MENSAJE_SIN_CONFIANZA = "No encontré esa carrera. ¿Podés reformular la consulta?"
+_MENSAJE_SIN_CONFIANZA = "No encontré la informacion pedida. ¿Podés reformular la consulta?"
 _MIN_RAW_DEFAULT = 0.19
 _MIN_RAW_FAQ = 0.13
 _MIN_RAW_GLOBAL = 0.12

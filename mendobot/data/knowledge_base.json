@@ -130,7 +130,7 @@
         "resumen",
         "objetivos formativos"
       ],
-      "respuesta": "La Tecnicatura Universitaria en Desarrollo de Software (RF-01) forma profesionales para producir software con herramientas de alto nivel, mantener programas, elegir lenguajes y arquitecturas, y trabajar en equipos de desarrollo. Consultá también horarios y estado de inscripción en la base de conocimiento."
+      "respuesta": "La Tecnicatura Universitaria en Desarrollo de Software forma profesionales para producir software con herramientas de alto nivel, mantener programas, elegir lenguajes y arquitecturas, y trabajar en equipos de desarrollo. Consultá también horarios y estado de inscripción en la base de conocimiento."
     },
     {
       "tema": "materias",
@@ -146,7 +146,7 @@
         "ramos",
         "malla curricular"
       ],
-      "respuesta": "Las materias del plan (RF-02) están organizadas por año (primer, segundo y tercer año). Pedime el plan completo o las materias de un año puntual."
+      "respuesta": "Las materias del plan están organizadas por año (primer, segundo y tercer año). Pedime el plan completo o las materias de un año puntual."
     },
     {
       "tema": "sedes",
@@ -163,7 +163,7 @@
         "maps",
         "contacto sede"
       ],
-      "respuesta": "Información de sedes (RF-04): la carrera se dicta en la Sede Río Cuarto. Para dirección exacta, contacto y horarios de atención, usá los canales oficiales de la Universidad de Mendoza."
+      "respuesta": "Información de sedes: la carrera se dicta en la Sede Río Cuarto. Para dirección exacta, contacto y horarios de atención, usá los canales oficiales de la Universidad de Mendoza."
     },
     {
       "tema": "modalidad",
@@ -180,7 +180,7 @@
         "formato",
         "horario de cursada"
       ],
-      "respuesta": "Modalidad y cursada (RF-03): la Tecnicatura es presencial. El cursado es de lunes a viernes de 18:00 a 22:00 hs. No está pensada como cursado 100% virtual u online."
+      "respuesta": "Modalidad y cursada: la Tecnicatura es presencial. El cursado es de lunes a viernes de 18:00 a 22:00 hs. No está pensada como cursado 100% virtual u online."
     },
     {
       "tema": "duracion",
