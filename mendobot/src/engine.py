@@ -34,6 +34,11 @@ _TRAMITES_INTENT_RE = re.compile(
 )
 _INTENT_PRIORITY_FAQ_BOOST = 6.5
 _INTENT_PRIORITY_OTHERS_WEIGHT = 0.32
+_PLAN_INTENT_RE = re.compile(
+    r"\b(plan(?: de estudios?)?|plan completo|plan de estudio completo|malla curricular)\b"
+)
+_PLAN_INTENT_BOOST = 1.8
+_PLAN_YEAR_DEMOTION = 0.62
 _FOLLOWUP_MAX_LEN = 48
 _FOLLOWUP_MAX_WORDS = 8
 
@@ -273,7 +278,7 @@ class MendoBotEngine:
                     materias,
                     pk_mat,
                     admin_blob,
-                    "plan de estudios materias duracion correlativas",
+                    "plan de estudios materias duracion correlativas plan completo",
                 ]
                 if part
             )
@@ -443,6 +448,10 @@ class MendoBotEngine:
             )
         )
 
+    @classmethod
+    def _has_plan_intent(cls, normalized: str) -> bool:
+        return bool(_PLAN_INTENT_RE.search(normalized))
+
     def _prioritize_faq_intent(
         self, similarities: np.ndarray, target_intent: str, non_match_faq_weight: float = 0.42
     ) -> np.ndarray:
@@ -487,6 +496,15 @@ class MendoBotEngine:
             return self._prioritize_faq_intent(similarities, "faq_economico")
         if self._has_tramites_intent(normalized_query):
             return self._prioritize_faq_intent(similarities, "faq_tramites")
+        if self._has_plan_intent(normalized_query) and not self._detect_year_filter(normalized_query):
+            boosted = np.asarray(similarities, dtype=np.float64).copy()
+            for i, cand in enumerate(self._candidates):
+                kind = cand.get("kind")
+                if kind == "plan":
+                    boosted[i] *= _PLAN_INTENT_BOOST
+                elif kind == "plan_year":
+                    boosted[i] *= _PLAN_YEAR_DEMOTION
+            return boosted
         if self._has_institutional_intent(normalized_query):
             return self._scores_institutional_boost(similarities, normalized_query)
         if self._has_perfil_intent(normalized_query):
@@ -500,6 +518,7 @@ class MendoBotEngine:
         raw_top2: float,
         kind: str | None,
         relaxed_faq_ambiguity: bool,
+        relaxed_plan_ambiguity: bool = False,
     ) -> bool:
         if raw_top1 < _MIN_RAW_GLOBAL:
             return False
@@ -511,6 +530,8 @@ class MendoBotEngine:
             return False
         ambiguous = raw_top1 < _AMBIGUOUS_SCORE_CEIL and (raw_top1 - raw_top2) < _AMBIGUOUS_GAP_MIN
         if ambiguous:
+            if kind == "plan" and relaxed_plan_ambiguity and raw_chosen >= _MIN_RAW_DEFAULT:
+                return True
             if relaxed_faq_ambiguity and kind == "faq" and raw_chosen >= (_MIN_RAW_FAQ - 0.02):
                 return True
             return False
@@ -582,6 +603,7 @@ class MendoBotEngine:
         tramites_intent = self._has_tramites_intent(normalized_query) and not economic_intent
         institutional_intent = self._has_institutional_intent(normalized_query)
         perfil_intent = self._has_perfil_intent(normalized_query)
+        plan_intent = self._has_plan_intent(normalized_query) and year_key is None
         relaxed_faq = (
             economic_intent or tramites_intent or institutional_intent or perfil_intent
         )
@@ -597,7 +619,7 @@ class MendoBotEngine:
 
         kind = self._candidates[best_idx].get("kind")
         if not self._confidence_acceptable(
-            raw_chosen, raw_g1, raw_g2, kind, relaxed_faq
+            raw_chosen, raw_g1, raw_g2, kind, relaxed_faq, plan_intent
         ):
             return {
                 "found": False,

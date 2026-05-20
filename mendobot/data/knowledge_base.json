@@ -124,6 +124,7 @@
       "pregunta": "descripcion carrera oferta academica tecnicatura desarrollo software planes propuesta de que se trata",
       "palabras_clave": [
         "que estudia",
+        "que es",
         "para que sirve",
         "habla de la carrera",
         "info general",
@@ -144,7 +145,8 @@
         "segundo año",
         "tercer año",
         "ramos",
-        "malla curricular"
+        "malla curricular",
+        "completo"
       ],
       "respuesta": "Las materias del plan están organizadas por año (primer, segundo y tercer año). Pedime el plan completo o las materias de un año puntual."
     },
@@ -187,6 +189,7 @@
       "pregunta": "duracion tiempo extension carrera",
       "palabras_clave": [
         "cuanto dura",
+        "cuantos años",
         "años",
         "plazo",
         "extension",
@@ -196,8 +199,12 @@
     },
     {
       "tema": "perfil_laboral",
-      "pregunta": "perfil laboral salida empleo trabajo roles competencias",
+      "pregunta": "perfil laboral profesional salida empleo trabajo roles competencias",
       "palabras_clave": [
+        "perfil profesional",
+        "que hace",
+        "recibirle",
+        "recibido",
         "trabajo",
         "empleo",
         "egreso",
@@ -235,6 +242,8 @@
       "pregunta": "documentacion inscripcion papeles requisitos analitico partida dni necesito cuales tramitar",
       "palabras_clave": [
         "inscripcion",
+        "inscripciones",
+        "inscripción",
         "papeles",
         "requisitos",
         "documentacion",
@@ -257,6 +266,8 @@
         "cuota",
         "pago",
         "pagos",
+        "paga",
+        "como se paga",
         "precio",
         "costo",
         "matricula",
