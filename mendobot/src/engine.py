@@ -14,10 +14,12 @@ from src.data_manager import DataManager
 
 
 # CU-01 E1: no forzar respuesta si la similitud global es baja o hay empate ambiguo.
-_MENSAJE_SIN_CONFIANZA = "No encontré la informacion pedida. ¿Podés reformular la consulta?"
-_MIN_RAW_DEFAULT = 0.19
-_MIN_RAW_FAQ = 0.13
-_MIN_RAW_GLOBAL = 0.12
+_MENSAJE_SIN_CONFIANZA = "No encontré la información pedida. ¿Podés reformular la consulta?"
+_MIN_RAW_DEFAULT = 0.17
+_MIN_RAW_FAQ = 0.11
+_MIN_RAW_GLOBAL = 0.09
+_MIN_KEYWORD_OVERLAP = 2
+_MIN_KEYWORD_OVERLAP_TIE_BREAK = 3
 _AMBIGUOUS_SCORE_CEIL = 0.36
 _AMBIGUOUS_GAP_MIN = 0.022
 _INTENT_FAQ_BOOST = 4.2
@@ -27,7 +29,10 @@ _INSTITUTIONAL_INTENT_RE = re.compile(
 )
 _COMO_ES_INTENT_RE = re.compile(r"\bcomo\s+es\b")
 _ECONOMIC_INTENT_RE = re.compile(
-    r"\b(cuota|cuotas|pago|pagos|dinero|costo|precio|matricula|matricular|arancel|mensual(?:es)?|economico|economica|financier[oa]|pesos|sale|cuesta)\b"
+    r"\b(cuota|cuotas|pago|pagos|paga|dinero|plata|costo|costos|precio|matricula|matricular|arancel|mensual(?:es)?|economico|economica|financier[oa]|pesos|sale|cuesta|junio|noviembre)\b"
+)
+_OUT_OF_SCOPE_RE = re.compile(
+    r"\b(abogac[ií]a|futbol|f[uú]tbol|campeon|notas?\s+de\s+mis|mis\s+notas|gestion\s+de\s+notas|inscripci[oó]n\s+definitiva|inscribirme\s+definitiv)\b"
 )
 _TRAMITES_INTENT_RE = re.compile(
     r"\b(inscripci[oó]n|requisitos|papeles|documentaci[oó]n|tramites|tr[aá]mites|anal[ií]tico|partida|dni\b|cursillo|nivelatorio|legalizad[oa]|constancia)\b"
@@ -36,6 +41,9 @@ _INTENT_PRIORITY_FAQ_BOOST = 6.5
 _INTENT_PRIORITY_OTHERS_WEIGHT = 0.32
 _PLAN_INTENT_RE = re.compile(
     r"\b(plan(?: de estudios?)?|plan completo|plan de estudio completo|malla curricular)\b"
+)
+_FULL_PLAN_RE = re.compile(
+    r"\b(plan\s+completo|plan\s+de\s+estudios\s+completo|malla\s+completa|todas\s+las\s+materias|mostrar\s+el\s+plan|ver\s+el\s+plan)\b"
 )
 _PLAN_INTENT_BOOST = 1.8
 _PLAN_YEAR_DEMOTION = 0.62
@@ -73,6 +81,7 @@ class MendoBotEngine:
         self._vectorizer: TfidfVectorizer | None = None
         self._candidate_vectors = None
         self._candidates: list[dict[str, Any]] = []
+        self._candidate_keyword_tokens: list[set[str]] = []
         self._last_topic: str | None = None
         self._context_career_label: str | None = None
         self._build_semantic_index()
@@ -211,9 +220,10 @@ class MendoBotEngine:
     def _format_plan_response(
         cls, career: dict[str, Any], year_keys: list[str] | None = None
     ) -> str:
+        # implements: RF-02 — arma el texto desde career["materias"] del JSON.
         nombre = str(career.get("nombre", career.get("name", "Carrera")))
         duracion = str(career.get("duracion", ""))
-        parts = [f"Plan de estudios de {nombre}."]
+        parts = [f"Plan de estudios completo de {nombre}."]
         if duracion:
             parts.append(f"Duración: {duracion}.")
         materias = career.get("materias")
@@ -230,6 +240,20 @@ class MendoBotEngine:
             parts.append(f"Materias: {materia_names}.")
         return " ".join(parts)
 
+    def _resolve_full_plan_message(self) -> str | None:
+        # implements: RF-02
+        data = self.data_manager.cargar_datos()
+        careers = self._extract_careers(data)
+        if not careers:
+            return None
+        return self._format_plan_response(careers[0])
+
+    @classmethod
+    def _wants_full_plan(cls, normalized: str) -> bool:
+        if _FULL_PLAN_RE.search(normalized):
+            return True
+        return "plan de estudios" in normalized and "completo" in normalized
+
     def _build_semantic_index(self) -> None:
         # RNF-01: índice TF-IDF precalculado al iniciar (<3s por consulta).
         data = self.data_manager.cargar_datos()
@@ -238,6 +262,7 @@ class MendoBotEngine:
         for career in self._extract_careers(data):
             career_id = str(career.get("id", ""))
             nombre = str(career.get("nombre", career.get("name", "Carrera")))
+            titulo = str(career.get("titulo_otorgado", nombre))
             descripcion = str(career.get("descripcion", career.get("description", "")))
             modalidad = str(career.get("modalidad", ""))
             duracion = str(career.get("duracion", ""))
@@ -254,6 +279,7 @@ class MendoBotEngine:
                 part
                 for part in [
                     nombre,
+                    titulo,
                     descripcion,
                     modalidad,
                     duracion,
@@ -305,7 +331,7 @@ class MendoBotEngine:
                             " ".join(str(m) for m in year_items),
                             pk_mat,
                             admin_blob,
-                            "materias plan estudios",
+                            "materias plan estudios programacion computacion",
                         ]
                         if part
                     )
@@ -337,10 +363,26 @@ class MendoBotEngine:
             tema = str(faq.get("tema", "")).lower()
             if tema == "economico":
                 faq_intent = "faq_economico"
-            elif tema in ("cursillo", "documentacion", "tramites"):
-                faq_intent = "faq_tramites"
-            elif tema == "perfil_laboral":
+            elif tema == "cursillo":
+                faq_intent = "faq_cursillo"
+            elif tema == "documentacion":
+                faq_intent = "faq_documentacion"
+            elif tema == "ia":
+                faq_intent = "faq_ia"
+            elif tema == "trabajo_equipo":
+                faq_intent = "faq_equipo"
+            elif tema in ("perfil_laboral", "competencias"):
                 faq_intent = "faq_perfil"
+            elif tema == "titulo":
+                faq_intent = "faq_titulo"
+            elif tema == "horario":
+                faq_intent = "faq_horario"
+            elif tema == "duracion":
+                faq_intent = "faq_duracion"
+            elif tema == "descripcion":
+                faq_intent = "faq_descripcion"
+            elif tema == "materias":
+                faq_intent = "faq_materias"
             elif tema == "sedes" or any(
                 w in faq_q
                 for w in ("sede", "donde", "ubic", "lugar", "campus", "direcc", "contacto", "domicilio")
@@ -359,6 +401,7 @@ class MendoBotEngine:
                     "response": faq["respuesta"],
                     "kind": "faq",
                     "faq_intent": faq_intent,
+                    "tema": tema,
                     "career_id": "",
                 }
             )
@@ -370,6 +413,9 @@ class MendoBotEngine:
         documents = [self._normalize(item["text"]) for item in candidates]
         self._vectorizer = TfidfVectorizer(ngram_range=(1, 2))
         self._candidate_vectors = self._vectorizer.fit_transform(documents)
+        self._candidate_keyword_tokens = [
+            set(self._tokenize(self._normalize(item["text"]))) for item in candidates
+        ]
 
     def _career_by_id(self, data: dict[str, Any], career_id: str) -> dict[str, Any] | None:
         for career in self._extract_careers(data):
@@ -440,10 +486,56 @@ class MendoBotEngine:
         return bool(_TRAMITES_INTENT_RE.search(normalized))
 
     @classmethod
+    def _tramites_subintent(cls, normalized: str) -> str:
+        if re.search(
+            r"\b(document|papeles|analitico|partida|dni|anotarme|llevar|constancia|legalizad)\b",
+            normalized,
+        ):
+            return "faq_documentacion"
+        if re.search(
+            r"\b(cursillo|nivelatorio|febrero|marzo|obligatorio|preuniversitario|ingreso)\b",
+            normalized,
+        ):
+            return "faq_cursillo"
+        return "faq_documentacion"
+
+    @classmethod
+    def _is_out_of_scope(cls, normalized: str) -> bool:
+        if _OUT_OF_SCOPE_RE.search(normalized):
+            return True
+        if re.search(r"\babogac", normalized) and not re.search(
+            r"\b(desarrollo|software|tecnicatur|informatic)\b", normalized
+        ):
+            return True
+        return False
+
+    @classmethod
+    def _has_oferta_intent(cls, normalized: str) -> bool:
+        return bool(
+            re.search(
+                r"\b(oferta|propuesta|titulo|trata|general|academica|que\s+es\s+la\s+carrera)\b",
+                normalized,
+            )
+        )
+
+    @classmethod
+    def _has_ia_intent(cls, normalized: str) -> bool:
+        return bool(re.search(r"\b(inteligencia\s+artificial|\bia\b|machine\s+learning)\b", normalized))
+
+    @classmethod
+    def _has_equipo_intent(cls, normalized: str) -> bool:
+        return bool(
+            re.search(
+                r"\b(trabajo\s+en\s+equipo|equipo\s+de\s+desarrollo|colaborar|colaboracion|integrar\s+equipos)\b",
+                normalized,
+            )
+        )
+
+    @classmethod
     def _has_perfil_intent(cls, normalized: str) -> bool:
         return bool(
             re.search(
-                r"\b(empleo|trabajo|laboral|egreso|full\s*stack|qa\b|mobile|backend|frontend|competencias|bases\s+de\s+datos|poo\b)\b",
+                r"\b(empleo|trabajo|laboral|egreso|salida|full\s*stack|qa\b|mobile|backend|frontend|competencias|tecnolog|aprendo|poo\b)\b",
                 normalized,
             )
         )
@@ -494,8 +586,23 @@ class MendoBotEngine:
         # RF-03 / RF-04: sede y modalidad vía refuerzo institucional cuando corresponde.
         if self._has_economic_intent(normalized_query):
             return self._prioritize_faq_intent(similarities, "faq_economico")
+        if self._has_ia_intent(normalized_query):
+            return self._prioritize_faq_intent(similarities, "faq_ia")
+        if self._has_equipo_intent(normalized_query):
+            return self._prioritize_faq_intent(similarities, "faq_equipo")
         if self._has_tramites_intent(normalized_query):
-            return self._prioritize_faq_intent(similarities, "faq_tramites")
+            return self._prioritize_faq_intent(
+                similarities, self._tramites_subintent(normalized_query)
+            )
+        if self._has_oferta_intent(normalized_query) and not self._has_plan_intent(normalized_query):
+            target = (
+                "faq_titulo"
+                if re.search(r"\b(titulo|otorga|recibir|diploma)\b", normalized_query)
+                else "faq_descripcion"
+            )
+            return self._prioritize_faq_intent(similarities, target)
+        if re.search(r"\b(horario|a\s+que\s+hora|18|22)\b", normalized_query):
+            return self._prioritize_faq_intent(similarities, "faq_horario")
         if self._has_plan_intent(normalized_query) and not self._detect_year_filter(normalized_query):
             boosted = np.asarray(similarities, dtype=np.float64).copy()
             for i, cand in enumerate(self._candidates):
@@ -536,6 +643,31 @@ class MendoBotEngine:
                 return True
             return False
         return True
+
+    def _keyword_overlap_score(self, normalized_query: str, idx: int) -> int:
+        query_tokens = set(self._tokenize(normalized_query))
+        if not query_tokens:
+            return 0
+        return len(query_tokens & self._candidate_keyword_tokens[idx])
+
+    def _keyword_fallback_best(self, normalized_query: str) -> int | None:
+        if not self._candidate_keyword_tokens:
+            return None
+        ranked = sorted(
+            (
+                (i, self._keyword_overlap_score(normalized_query, i))
+                for i in range(len(self._candidates))
+            ),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        best_idx, best_score = ranked[0]
+        second_score = ranked[1][1] if len(ranked) > 1 else 0
+        if best_score < _MIN_KEYWORD_OVERLAP:
+            return None
+        if best_score == second_score and best_score < _MIN_KEYWORD_OVERLAP_TIE_BREAK:
+            return None
+        return best_idx
 
     @staticmethod
     def _top_two_global_scores(similarities: np.ndarray) -> tuple[float, float]:
@@ -594,18 +726,47 @@ class MendoBotEngine:
                 "animate_avatar": False,
             }
 
+        normalized_raw = self._normalize(consulta_usuario)
+        if self._is_out_of_scope(normalized_raw):
+            return {
+                "found": False,
+                "message": _MENSAJE_SIN_CONFIANZA,
+                "animate_avatar": False,
+            }
+
         resolved = self._maybe_expand_followup(consulta_usuario)
         query_for_match = (resolved or consulta_usuario).strip()
 
         year_key = self._detect_year_filter(query_for_match)
         normalized_query = self._normalize(query_for_match)
+
+        if self._wants_full_plan(normalized_query) and year_key is None:
+            plan_message = self._resolve_full_plan_message()
+            if plan_message:
+                self._last_topic = "materias"
+                data = self.data_manager.cargar_datos()
+                careers = self._extract_careers(data)
+                if careers:
+                    self._context_career_label = str(
+                        careers[0].get("nombre", careers[0].get("name", ""))
+                    )
+                return {
+                    "found": True,
+                    "message": plan_message,
+                    "animate_avatar": True,
+                }
+
         economic_intent = self._has_economic_intent(normalized_query)
         tramites_intent = self._has_tramites_intent(normalized_query) and not economic_intent
         institutional_intent = self._has_institutional_intent(normalized_query)
         perfil_intent = self._has_perfil_intent(normalized_query)
         plan_intent = self._has_plan_intent(normalized_query) and year_key is None
         relaxed_faq = (
-            economic_intent or tramites_intent or institutional_intent or perfil_intent
+            economic_intent
+            or tramites_intent
+            or institutional_intent
+            or perfil_intent
+            or self._has_oferta_intent(normalized_query)
         )
 
         query_vector = self._vectorizer.transform([normalized_query])
@@ -617,15 +778,34 @@ class MendoBotEngine:
         raw_chosen = float(raw_similarities.ravel()[best_idx])
         raw_g1, raw_g2 = self._top_two_global_scores(raw_similarities)
 
+        if year_key:
+            data = self.data_manager.cargar_datos()
+            careers = self._extract_careers(data)
+            if careers:
+                year_message = self._format_year_plan_response(careers[0], year_key)
+                if year_message:
+                    self._update_topic_context(best_idx, year_key)
+                    return {
+                        "found": True,
+                        "message": year_message,
+                        "animate_avatar": True,
+                    }
+
         kind = self._candidates[best_idx].get("kind")
         if not self._confidence_acceptable(
             raw_chosen, raw_g1, raw_g2, kind, relaxed_faq, plan_intent
         ):
-            return {
-                "found": False,
-                "message": _MENSAJE_SIN_CONFIANZA,
-                "animate_avatar": False,
-            }
+            fallback_idx = self._keyword_fallback_best(normalized_query)
+            if fallback_idx is not None:
+                best_idx = fallback_idx
+                raw_chosen = float(raw_similarities.ravel()[best_idx])
+                kind = self._candidates[best_idx].get("kind")
+            else:
+                return {
+                    "found": False,
+                    "message": _MENSAJE_SIN_CONFIANZA,
+                    "animate_avatar": False,
+                }
 
         if year_key:
             year_message = self._resolve_year_filtered_message(
