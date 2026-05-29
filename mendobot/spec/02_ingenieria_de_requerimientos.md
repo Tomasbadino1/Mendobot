@@ -98,7 +98,7 @@ Mínimo 8 requerimientos obligatorios.
 
 - **CA-03.1**
 
-  - **Dado** que la modalidad oficial de la carrera es **presencial** (`info_administrativa.md`).
+  - **Dado** que la modalidad oficial de la carrera es **presencial**.
 
   - **Cuando** el usuario pregunta si la carrera es presencial o virtual.
 
@@ -258,7 +258,7 @@ Mínimo 8 requerimientos obligatorios.
 
 - **CA-08.1**
 
-  - **Dado** que el servicio MendoBot fue iniciado mediante `main.py` en la consola.
+  - **Dado** que el servicio MendoBot fue iniciado mediante `python main.py` en la consola.
 
   - **Cuando** el proceso queda en ejecución.
 
@@ -287,36 +287,6 @@ Mínimo 8 requerimientos obligatorios.
   - **Cuando** confirma el cierre en la terminal.
 
   - **Entonces** el sistema finaliza el bucle y termina el servicio de forma ordenada.
-
----
-
-### Criterios transversales — Ingreso y aspectos económicos
-
-*Complementan RF-01 a RF-04 con datos de `info_administrativa.md` usados en la base de conocimiento.*
-
-- **CA-TRX.1**
-
-  - **Dado** que el cursillo inicia en **febrero 2026** y cierra en **marzo 2026**, con examen **nivelatorio**.
-
-  - **Cuando** el usuario pregunta por fechas u obligatoriedad del cursillo.
-
-  - **Entonces** el sistema informa el período, la modalidad presencial obligatoria y el carácter nivelatorio del examen final.
-
-- **CA-TRX.2**
-
-  - **Dado** que el cursillo preuniversitario es de **pago obligatorio** antes de las cuotas mensuales.
-
-  - **Cuando** el usuario pregunta por el costo del cursillo o cómo se paga.
-
-  - **Entonces** el sistema indica que el cursillo es de pago, de abono obligatorio, y que luego aplican **12 cuotas** (marzo a febrero) y matrícula (**50 % en junio y 50 % en noviembre**).
-
-- **CA-TRX.3**
-
-  - **Dado** que la documentación requerida incluye DNI, partida de nacimiento, analítico legalizado o constancia.
-
-  - **Cuando** el usuario pregunta qué papeles necesita para inscribirse.
-
-  - **Entonces** el sistema lista los cuatro tipos de documentación oficiales.
 
 ---
 
