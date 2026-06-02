@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Modelo Vosk (STT offline): descargable, no se versiona (~58 MB).
+# Ver mendobot/voice/README.md → "Modelo Vosk".
+mendobot/voice/models/

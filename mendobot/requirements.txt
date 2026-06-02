@@ -1,4 +1,8 @@
-# Dependencias iniciales para MVP por consola.
-# Se pueden ampliar en fases de NLP y UI 3D.
+# Dependencias del MVP.
+# Motor NLP (CU-01): búsqueda semántica TF-IDF.
 numpy
 scikit-learn
+
+# Reconocimiento de voz offline (RF-05) usado por server.py.
+# Requiere descargar el modelo en español: ver voice/README.md (sección "Modelo Vosk").
+vosk
