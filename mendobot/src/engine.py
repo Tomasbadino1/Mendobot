@@ -526,7 +526,7 @@ class MendoBotEngine:
     def _has_equipo_intent(cls, normalized: str) -> bool:
         return bool(
             re.search(
-                r"\b(trabajo\s+en\s+equipo|equipo\s+de\s+desarrollo|colaborar|colaboracion|integrar\s+equipos)\b",
+                r"\b(trabaj\w*\s+en\s+equipo|equipo\s+de\s+desarrollo|equipos?\s+de\s+trabajo|colaborar|colaboracion|integrar\s+equipos)\b",
                 normalized,
             )
         )

@@ -284,6 +284,22 @@
       "respuesta": "Salida laboral: podés desempeñarte como desarrollador backend o frontend, programador Full Stack, Tester QA, analista junior, soporte técnico o desarrollo mobile."
     },
     {
+      "tema": "trabajo_equipo",
+      "pregunta": "trabajo en equipo trabajar en equipo equipos de desarrollo colaboracion integrar equipos",
+      "palabras_clave": [
+        "trabajo en equipo",
+        "trabajar en equipo",
+        "se trabaja en equipo",
+        "trabajamos en equipo",
+        "equipos de desarrollo",
+        "equipos de trabajo",
+        "colaborar",
+        "colaboracion",
+        "integrar equipos"
+      ],
+      "respuesta": "Sí. La carrera forma al egresado para integrar equipos de trabajo de desarrollo de software en cualquiera de sus fases y para trabajar en equipos de desarrollo, una competencia central del perfil profesional."
+    },
+    {
       "tema": "competencias",
       "pregunta": "competencias tecnicas tecnologias aprender poo bases datos algoritmos",
       "palabras_clave": [
