@@ -67,12 +67,16 @@
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition || null;
   const sintesisDisponible = "speechSynthesis" in window;
+  const mediaDevicesDisponible = !!(
+    navigator.mediaDevices && navigator.mediaDevices.getUserMedia
+  );
   let recognition = null;
 
   // --- Captura de audio para STT en el servidor (Vosk, offline) ---
-  // Se usa como fallback cuando el navegador no soporta Web Speech o este falla
-  // con `network`/`service-not-allowed` (servicio remoto de Google no disponible).
-  let usarServidorSTT = !SpeechRecognition;
+  // Se usa cuando el navegador no soporta Web Speech o este falla con
+  // `network`/`service-not-allowed` (servicio remoto de Google no disponible).
+  const STT_SAMPLE_RATE = 16000; // tasa que espera el modelo Vosk del servidor.
+  let usarServidorSTT = !SpeechRecognition && mediaDevicesDisponible;
   let grabando = false;
   let audioCtx = null;
   let mediaStream = null;
@@ -200,11 +204,17 @@
         case "network":
         case "service-not-allowed":
           // El reconocimiento del navegador (servidor remoto de Google) no está
-          // disponible. Cambiamos al STT local del backend (Vosk, offline).
-          usarServidorSTT = true;
-          msg =
-            "El reconocimiento del navegador no está disponible. Activé el modo " +
-            "local (offline): tocá el micrófono de nuevo para hablar.";
+          // disponible. Si podemos grabar, pasamos al STT local (Vosk, offline).
+          if (mediaDevicesDisponible) {
+            usarServidorSTT = true;
+            msg =
+              "El reconocimiento del navegador no está disponible. Activé el modo " +
+              "local (offline): tocá el micrófono de nuevo para hablar.";
+          } else {
+            msg =
+              "El reconocimiento del navegador no está disponible y este navegador " +
+              "no permite grabar audio. Usá la caja de texto.";
+          }
           break;
         case "aborted":
           msg = "La escucha se interrumpió. Reintentá tocando el micrófono.";
@@ -241,6 +251,170 @@
   }
 
   // ---------------------------------------------------------------------------
+  // STT local vía servidor (Vosk, offline) — CA-05.3
+  // Graba del micrófono, codifica WAV mono 16-bit y lo manda a POST /transcribir.
+  // El texto resultante sigue el MISMO camino que una consulta escrita.
+  // ---------------------------------------------------------------------------
+  async function iniciarGrabacionLocal() {
+    try {
+      mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (_e) {
+      // CA-05.3: permiso denegado → informar y seguir por texto.
+      agregarMensaje(
+        "No se pudo acceder al micrófono (permiso denegado). " +
+          "Habilitá el permiso del sitio y reintentá, o usá la caja de texto.",
+        "sys"
+      );
+      setEstado(Estado.INACTIVO);
+      return;
+    }
+
+    // Intentamos capturar a 16 kHz (lo que espera Vosk). Si el navegador no
+    // respeta la tasa pedida, usamos la real y la escribimos en el header WAV.
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new Ctx({ sampleRate: STT_SAMPLE_RATE });
+    try {
+      await audioCtx.resume();
+    } catch (_e) {
+      /* algunos navegadores ya lo entregan activo */
+    }
+
+    pcmChunks = [];
+    sourceNode = audioCtx.createMediaStreamSource(mediaStream);
+    procNode = audioCtx.createScriptProcessor(4096, 1, 1);
+    procNode.onaudioprocess = (e) => {
+      // Copiamos el canal mono (Float32 en [-1, 1]); no escribimos salida → sin eco.
+      pcmChunks.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+    };
+    sourceNode.connect(procNode);
+    procNode.connect(audioCtx.destination); // requerido para que dispare el callback.
+
+    grabando = true;
+    $micBtn.classList.add("activo");
+    $micBtn.setAttribute("aria-pressed", "true");
+    setEstado(Estado.ESCUCHANDO);
+  }
+
+  async function detenerGrabacionLocal() {
+    grabando = false;
+    $micBtn.classList.remove("activo");
+    $micBtn.setAttribute("aria-pressed", "false");
+
+    // Cerramos el grafo de audio y liberamos el micrófono.
+    if (procNode) {
+      procNode.disconnect();
+      procNode.onaudioprocess = null;
+    }
+    if (sourceNode) sourceNode.disconnect();
+    if (mediaStream) mediaStream.getTracks().forEach((t) => t.stop());
+    const sampleRate = audioCtx ? audioCtx.sampleRate : STT_SAMPLE_RATE;
+    if (audioCtx) {
+      try {
+        await audioCtx.close();
+      } catch (_e) {
+        /* ya cerrado */
+      }
+    }
+    procNode = sourceNode = mediaStream = audioCtx = null;
+
+    const wav = _codificarWav(pcmChunks, sampleRate);
+    pcmChunks = [];
+    if (!wav) {
+      setEstado(Estado.INACTIVO);
+      return;
+    }
+
+    setEstado(Estado.TRANSCRIBIENDO);
+    let texto = "";
+    try {
+      const resp = await fetch("/transcribir", {
+        method: "POST",
+        headers: { "Content-Type": "application/octet-stream" },
+        body: wav,
+      });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok || data.error) {
+        agregarMensaje(
+          data.message ||
+            "El reconocimiento de voz local no está disponible. Usá la caja de texto.",
+          "sys"
+        );
+        setEstado(Estado.INACTIVO);
+        return;
+      }
+      texto = (data.texto || "").trim();
+    } catch (_e) {
+      agregarMensaje(
+        "No se pudo contactar el servicio de transcripción. Usá la caja de texto.",
+        "sys"
+      );
+      setEstado(Estado.INACTIVO);
+      return;
+    }
+
+    if (!texto) {
+      agregarMensaje(
+        "No se entendió el audio. Probá de nuevo o escribí tu consulta.",
+        "sys"
+      );
+      setEstado(Estado.INACTIVO);
+      return;
+    }
+    procesarConsulta(texto); // mismo camino que el texto escrito.
+  }
+
+  /** Codifica PCM Float32 mono → Blob WAV PCM 16-bit. */
+  function _codificarWav(chunks, sampleRate) {
+    let largo = 0;
+    for (const c of chunks) largo += c.length;
+    if (largo === 0) return null;
+
+    const pcm = new Float32Array(largo);
+    let off = 0;
+    for (const c of chunks) {
+      pcm.set(c, off);
+      off += c.length;
+    }
+
+    const buffer = new ArrayBuffer(44 + pcm.length * 2);
+    const view = new DataView(buffer);
+    const escribirStr = (pos, s) => {
+      for (let i = 0; i < s.length; i++) view.setUint8(pos + i, s.charCodeAt(i));
+    };
+    escribirStr(0, "RIFF");
+    view.setUint32(4, 36 + pcm.length * 2, true);
+    escribirStr(8, "WAVE");
+    escribirStr(12, "fmt ");
+    view.setUint32(16, 16, true); // tamaño del subchunk fmt
+    view.setUint16(20, 1, true); // formato PCM
+    view.setUint16(22, 1, true); // canales: mono
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true); // byte rate (mono, 16-bit)
+    view.setUint16(32, 2, true); // block align
+    view.setUint16(34, 16, true); // bits por muestra
+    escribirStr(36, "data");
+    view.setUint32(40, pcm.length * 2, true);
+
+    let pos = 44;
+    for (let i = 0; i < pcm.length; i++) {
+      const s = Math.max(-1, Math.min(1, pcm[i]));
+      view.setInt16(pos, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+      pos += 2;
+    }
+    return new Blob([view], { type: "audio/wav" });
+  }
+
+  /** Enruta el botón de micrófono: STT local (Vosk) o Web Speech del navegador. */
+  function manejarMicrofono() {
+    if (usarServidorSTT) {
+      if (grabando) detenerGrabacionLocal();
+      else iniciarGrabacionLocal();
+      return;
+    }
+    alternarEscucha();
+  }
+
+  // ---------------------------------------------------------------------------
   // Inicialización
   // ---------------------------------------------------------------------------
   function init() {
@@ -252,9 +426,12 @@
 
     if (SpeechRecognition) {
       configurarReconocimiento();
-      $micBtn.addEventListener("click", alternarEscucha);
+    }
+    if (SpeechRecognition || (usarServidorSTT && mediaDevicesDisponible)) {
+      // El mismo botón sirve para Web Speech y para el STT local (Vosk).
+      $micBtn.addEventListener("click", manejarMicrofono);
     } else {
-      // CA-05.3: navegador sin soporte → deshabilitar mic, informar, no bloquear.
+      // CA-05.3: sin Web Speech y sin captura de audio → solo texto.
       $micBtn.disabled = true;
       $micBtn.title = "Reconocimiento de voz no soportado en este navegador";
       $micBtn.classList.add("deshabilitado");
