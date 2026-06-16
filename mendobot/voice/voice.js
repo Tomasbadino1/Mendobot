@@ -53,6 +53,18 @@
   const $sendBtn = document.getElementById("send-btn");
   const $estado = document.getElementById("estado");
   const $vozChk = document.getElementById("voz-activa");
+  const $mouthShape = document.getElementById("mouth-shape");
+
+  const MOUTH_IMAGES = {
+    neutral: "/model/Bocas/Boca neutral (Feliz).png",
+    abp: "/model/Bocas/M _ B _ P.png",
+    ldt: "/model/Bocas/L _ D _ T.png",
+    ah: "/model/Bocas/A _ H.png",
+    ei: "/model/Bocas/E _ I.png",
+    o: "/model/Bocas/O.png",
+    uq: "/model/Bocas/U _ Q.png",
+  };
+  let mouthAnimationTimer = null;
 
   // --- Estado del módulo ---
   const Estado = {
@@ -97,6 +109,68 @@
 
   function setEstado(texto) {
     $estado.textContent = texto;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Animación simple de boca basada en el texto de la respuesta.
+  // ---------------------------------------------------------------------------
+  function setMouthImage(src, alt) {
+    if (!$mouthShape) return;
+    $mouthShape.src = src;
+    $mouthShape.alt = alt;
+  }
+
+  function elegirBocaPorCaracter(caracter) {
+    if (/[mbp]/.test(caracter)) return { src: MOUTH_IMAGES.abp, alt: "Boca para M/B/P" };
+    if (/[ldt]/.test(caracter)) return { src: MOUTH_IMAGES.ldt, alt: "Boca para L/D/T" };
+    if (/[aiáí]/.test(caracter)) return { src: MOUTH_IMAGES.ah, alt: "Boca para A/I" };
+    if (/[eé]/.test(caracter)) return { src: MOUTH_IMAGES.ei, alt: "Boca para E" };
+    if (/[oó]/.test(caracter)) return { src: MOUTH_IMAGES.o, alt: "Boca para O" };
+    if (/[uúüq]/.test(caracter)) return { src: MOUTH_IMAGES.uq, alt: "Boca para U/Q" };
+    return null;
+  }
+
+  function construirSecuenciaBoca(texto) {
+    const negrita = String(texto || "").toLowerCase().replace(/[^a-záéíóúüñ ]+/g, " ");
+    const caracteres = negrita.replace(/\s+/g, " ").trim().split("");
+    const secuencia = [];
+
+    for (const caracter of caracteres) {
+      const boca = elegirBocaPorCaracter(caracter);
+      if (!boca) continue;
+      if (!secuencia.length || secuencia[secuencia.length - 1].src !== boca.src) {
+        secuencia.push(boca);
+      }
+      if (secuencia.length >= 8) break;
+    }
+
+    return secuencia.length ? secuencia : [{ src: MOUTH_IMAGES.neutral, alt: "Boca neutral" }];
+  }
+
+  function detenerAnimacionBoca() {
+    if (mouthAnimationTimer !== null) {
+      clearTimeout(mouthAnimationTimer);
+      mouthAnimationTimer = null;
+    }
+  }
+
+  function animarBocaDesdeTexto(texto) {
+    detenerAnimacionBoca();
+    const secuencia = construirSecuenciaBoca(texto);
+    let indice = 0;
+
+    const siguiente = () => {
+      if (indice >= secuencia.length) {
+        setMouthImage(MOUTH_IMAGES.neutral, "Boca neutral");
+        mouthAnimationTimer = null;
+        return;
+      }
+      setMouthImage(secuencia[indice].src, secuencia[indice].alt);
+      indice += 1;
+      mouthAnimationTimer = setTimeout(siguiente, 180);
+    };
+
+    siguiente();
   }
 
   // ---------------------------------------------------------------------------
@@ -149,7 +223,10 @@
     }
 
     if (respuesta.found) {
+      animarBocaDesdeTexto(respuesta.message);
       hablar(respuesta.message); // CA-05.2: solo se sintetiza una respuesta válida.
+    } else {
+      animarBocaDesdeTexto(respuesta.message);
     }
 
     setEstado(Estado.INACTIVO);

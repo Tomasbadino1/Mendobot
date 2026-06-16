@@ -34,6 +34,7 @@ from src.engine import MendoBotEngine
 # --- Configuración ---
 BASE_DIR = Path(__file__).parent
 VOICE_DIR = BASE_DIR / "voice"
+STATIC_MODEL_DIR = BASE_DIR / "model"
 DATA_PATH = BASE_DIR / "data" / "knowledge_base.json"
 MODEL_DIR = VOICE_DIR / "models" / "vosk-model-small-es-0.42"
 STT_SAMPLE_RATE = 16000  # el frontend captura PCM mono a 16 kHz
@@ -54,6 +55,8 @@ _MIME = {
     ".css": "text/css; charset=utf-8",
     ".json": "application/json; charset=utf-8",
     ".ico": "image/x-icon",
+    ".glb": "model/gltf-binary",
+    ".png": "image/png",
 }
 
 
@@ -136,9 +139,16 @@ class MendoBotHandler(BaseHTTPRequestHandler):
         if rel_path in ("", "/"):
             rel_path = "index.html"
         rel_path = rel_path.lstrip("/")
-        target = (VOICE_DIR / rel_path).resolve()
+
+        if rel_path.startswith("model/"):
+            target = (STATIC_MODEL_DIR / rel_path[len("model/"):]).resolve()
+            allowed_base = STATIC_MODEL_DIR.resolve()
+        else:
+            target = (VOICE_DIR / rel_path).resolve()
+            allowed_base = VOICE_DIR.resolve()
+
         try:
-            target.relative_to(VOICE_DIR.resolve())
+            target.relative_to(allowed_base)
         except ValueError:
             self.send_error(HTTPStatus.FORBIDDEN, "Ruta no permitida")
             return

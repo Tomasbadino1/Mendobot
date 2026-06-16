@@ -25,7 +25,7 @@
       }
       .app {
         width: 100%;
-        max-width: 640px;
+        max-width: 1080px;
         display: flex;
         flex-direction: column;
         background: #fff;
@@ -36,6 +36,80 @@
         background: var(--azul);
         color: #fff;
         padding: 16px 20px;
+      }
+      .main-content {
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 16px;
+      }
+      .chat-area {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .avatar-panel {
+        width: min(360px, 100%);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+        background: #f7fbff;
+        border: 1px solid rgba(31, 78, 121, 0.12);
+        border-radius: 18px;
+      }
+      .avatar-panel h2 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--azul);
+      }
+      .avatar-frame {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1.1;
+        min-height: 380px;
+        background: linear-gradient(180deg, #eef7ff 0%, #ffffff 100%);
+        border-radius: 18px;
+        overflow: hidden;
+      }
+      model-viewer,
+      .avatar-fallback {
+        width: 100%;
+        height: 100%;
+        display: block;
+        border: none;
+      }
+      .avatar-fallback {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #4a5568;
+        font-size: 0.95rem;
+        padding: 16px;
+        text-align: center;
+      }
+      #mouth-shape {
+        position: absolute;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 48%;
+        max-width: 180px;
+        pointer-events: none;
+        image-rendering: crisp-edges;
+      }
+      .avatar-hint {
+        font-size: 0.82rem;
+        color: #44556b;
+        line-height: 1.4;
+      }
+      .avatar-note {
+        font-size: 0.82rem;
+        color: #1f4e79;
+        background: rgba(31, 78, 121, 0.08);
+        padding: 10px 12px;
+        border-radius: 12px;
       }
       header h1 { font-size: 1.1rem; margin: 0; }
       header p { margin: 4px 0 0; font-size: 0.8rem; opacity: 0.85; }
@@ -146,32 +220,53 @@
         <p>RF-05 — Escucha, Voz e Interpretación (prototipo con datos simulados)</p>
       </header>
 
-      <!-- Área de conversación legible (RNF-02) -->
-      <section id="conversacion" aria-live="polite"></section>
+      <div class="main-content">
+        <section class="chat-area">
+          <section id="conversacion" aria-live="polite"></section>
 
-      <div class="barra-estado">
-        <span>Estado: <strong id="estado">Listo</strong></span>
-        <label class="voz-toggle">
-          <input type="checkbox" id="voz-activa" checked />
-          Leer respuesta en voz
-        </label>
-      </div>
+          <div class="barra-estado">
+            <span>Estado: <strong id="estado">Listo</strong></span>
+            <label class="voz-toggle">
+              <input type="checkbox" id="voz-activa" checked />
+              Leer respuesta en voz
+            </label>
+          </div>
 
-      <!-- Micrófono + caja de texto siempre disponible (CA-05.1 / CA-05.3) -->
-      <div class="entrada">
-        <button id="mic-btn" aria-label="Activar micrófono" aria-pressed="false" title="Hablar">
-          🎤
-        </button>
-        <input
-          id="text-input"
-          type="text"
-          placeholder="Escribí tu consulta o tocá el micrófono…"
-          autocomplete="off"
-        />
-        <button id="send-btn">Enviar</button>
+          <div class="entrada">
+            <button id="mic-btn" aria-label="Activar micrófono" aria-pressed="false" title="Hablar">
+              🎤
+            </button>
+            <input
+              id="text-input"
+              type="text"
+              placeholder="Escribí tu consulta o tocá el micrófono…"
+              autocomplete="off"
+            />
+            <button id="send-btn">Enviar</button>
+          </div>
+        </section>
+
+        <aside class="avatar-panel" aria-label="Avatar de MendoBot">
+          <h2>MendoBot</h2>
+          <div class="avatar-frame" id="model-container">
+            <model-viewer
+              id="mendobot-model"
+              src="/model/Mendobot.glb"
+              alt="Avatar 3D de MendoBot"
+              camera-controls
+              auto-rotate
+              ar
+              exposure="1.0"
+            ></model-viewer>
+            <img id="mouth-shape" src="/model/Bocas/Boca neutral (Feliz).png" alt="Boca neutral" />
+          </div>
+          <p class="avatar-hint">El modelo refleja la respuesta de voz con las bocas según los fonemas detectados en el texto.</p>
+          <div class="avatar-note">El avatar se ubica a la derecha para mantener la conversación visible y el tamaño balanceado.</div>
+        </aside>
       </div>
     </main>
 
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     <script src="mock-respuestas.js"></script>
     <script src="voice.js"></script>
   </body>
