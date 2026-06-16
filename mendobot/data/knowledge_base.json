@@ -225,7 +225,7 @@
         "rio cuarto",
         "maps"
       ],
-      "respuesta": "Información de sedes: la carrera se dicta en la Sede Río Cuarto. Esta se encuentra en la calle Hipolito Yrigoyen y Belgrano."
+      "respuesta": "la carrera se dicta en la Sede Río Cuarto. Esta se encuentra en la calle Hipolito Yrigoyen y Belgrano."
     },
     {
       "tema": "modalidad",
@@ -245,7 +245,7 @@
         "distancia",
         "formato"
       ],
-      "respuesta": "Modalidad: la Tecnicatura es presencial. El horario de cursada es de lunes a viernes de 18:00 a 22:00 hs; se espera asistencia a clases en la institución. No está pensada como cursado 100% virtual u online."
+      "respuesta": "la Tecnicatura es presencial. El horario de cursada es de lunes a viernes de 18:00 a 22:00 hs; se espera asistencia a clases en la institución. No está pensada como cursado 100% virtual u online."
     },
     {
       "tema": "horario",
@@ -260,7 +260,7 @@
         "turno",
         "franja horaria"
       ],
-      "respuesta": "Horario de cursada: lunes a viernes de 18:00 a 22:00 hs."
+      "respuesta": "Horario de cursada: lunes de 18:00 a 21:00 hs y martes a viernes de 18:00 a 22:00 hs."
     },
     {
       "tema": "perfil_laboral",
