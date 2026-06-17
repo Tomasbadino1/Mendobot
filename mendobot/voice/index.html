@@ -91,13 +91,14 @@
       }
       #mouth-shape {
         position: absolute;
-        bottom: 18px;
+        bottom: 22%;
         left: 50%;
         transform: translateX(-50%);
-        width: 48%;
-        max-width: 180px;
+        width: 28%;
+        min-width: 90px;
+        max-width: 140px;
         pointer-events: none;
-        image-rendering: crisp-edges;
+        image-rendering: auto;
       }
       .avatar-hint {
         font-size: 0.82rem;
@@ -251,14 +252,11 @@
           <div class="avatar-frame" id="model-container">
             <model-viewer
               id="mendobot-model"
-              src="/model/Mendobot.glb"
+              src="../model/Mendobot.glb"
               alt="Avatar 3D de MendoBot"
-              camera-controls
-              auto-rotate
-              ar
               exposure="1.0"
             ></model-viewer>
-            <img id="mouth-shape" src="/model/Bocas/Boca neutral (Feliz).png" alt="Boca neutral" />
+            <img id="mouth-shape" src="../model/Bocas/Boca_neutral.png" alt="Boca neutral" />
           </div>
           <p class="avatar-hint">El modelo refleja la respuesta de voz con las bocas según los fonemas detectados en el texto.</p>
           <div class="avatar-note">El avatar se ubica a la derecha para mantener la conversación visible y el tamaño balanceado.</div>
