@@ -56,13 +56,13 @@
   const $mouthShape = document.getElementById("mouth-shape");
 
   const MOUTH_IMAGES = {
-    neutral: "/model/Bocas/Boca neutral (Feliz).png",
-    abp: "/model/Bocas/M _ B _ P.png",
-    ldt: "/model/Bocas/L _ D _ T.png",
-    ah: "/model/Bocas/A _ H.png",
-    ei: "/model/Bocas/E _ I.png",
-    o: "/model/Bocas/O.png",
-    uq: "/model/Bocas/U _ Q.png",
+    neutral: "../model/Bocas/Boca neutral (Feliz).png",
+    abp: "../model/Bocas/M _ B _ P.png",
+    ldt: "../model/Bocas/L _ D _ T.png",
+    ah: "../model/Bocas/A _ H.png",
+    ei: "../model/Bocas/E _ I.png",
+    o: "../model/Bocas/O.png",
+    uq: "../model/Bocas/U _ Q.png",
   };
   let mouthAnimationTimer = null;
 
@@ -104,7 +104,9 @@
     burbuja.className = "msg msg-" + autor; // autor: "user" | "bot" | "sys"
     burbuja.textContent = texto;
     $conversacion.appendChild(burbuja);
+    burbuja.scrollIntoView({ behavior: "smooth", block: "end" });
     $conversacion.scrollTop = $conversacion.scrollHeight;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   }
 
   function setEstado(texto) {
