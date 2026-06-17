@@ -196,6 +196,18 @@
       "respuesta": "Pedime el plan de estudios completo o las materias de un año en particular (primer, segundo o tercer año). El plan incluye materias por año y duración total de 3 años."
     },
     {
+      "tema": "cantidad_materias",
+      "pregunta": "cantidad de materias cuantas materias tiene la carrera numero de materias total primer segundo tercer año",
+      "palabras_clave": [
+        "cuantas materias",
+        "cantidad de materias",
+        "numero de materias",
+        "materias totales",
+        "materias carrera"
+      ],
+      "respuesta": "Según el plan de estudios en el proyecto, la carrera tiene 17 materias en total:\n- 5 del primer año\n- 6 del segundo año\n- 6 del tercer año"
+    },
+    {
       "tema": "duracion",
       "pregunta": "duracion tiempo extension carrera cuanto dura años",
       "palabras_clave": [
@@ -225,7 +237,7 @@
         "rio cuarto",
         "maps"
       ],
-      "respuesta": "la carrera se dicta en la Sede Río Cuarto. Esta se encuentra en la calle Hipolito Yrigoyen y Belgrano."
+      "respuesta": "La carrera se dicta en la Sede Río Cuarto. Esta se encuentra en la calle Hipolito Yrigoyen y Belgrano."
     },
     {
       "tema": "modalidad",
@@ -329,7 +341,7 @@
         "deep learning",
         "chatgpt"
       ],
-      "respuesta": "En la documentación oficial consolidada de la carrera no figura una materia específica de Inteligencia Artificial. La formación se centra en desarrollo de software, POO, bases de datos, ingeniería de software y arquitectura."
+      "respuesta": "En la documentación oficial consolidada de la carrera no figura una materia específica de Inteligencia Artificial. La formación se centra en desarrollo de software, POO, bases de datos, ingeniería de software y arquitectura. No es una materia en si pero se usa como recurso para cada materia."
     },
     {
       "tema": "cursillo",
@@ -348,7 +360,7 @@
         "preuniversitario",
         "ingreso"
       ],
-      "respuesta": "Cursillo preuniversitario: inicio en febrero 2026 y cierre en marzo 2026; modalidad presencial obligatoria; examen final de carácter nivelatorio."
+      "respuesta": "Cursillo preuniversitario: inicio en febrero y cierre en marzo de cada año; modalidad presencial obligatoria; examen final de carácter nivelatorio."
     },
     {
       "tema": "documentacion",
