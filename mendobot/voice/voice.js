@@ -56,16 +56,15 @@
   const $mouthShape = document.getElementById("mouth-shape");
 
   const MOUTH_IMAGES = {
-    neutral: "/model/Bocas/Boca neutral (Feliz).png",
-    abp: "/model/Bocas/M _ B _ P.png",
-    ldt: "/model/Bocas/L _ D _ T.png",
-    ah: "/model/Bocas/A _ H.png",
-    ei: "/model/Bocas/E _ I.png",
+    neutral: "/model/Bocas/Boca_neutral.png",
+    abp: "/model/Bocas/M_B_P.png",
+    ldt: "/model/Bocas/L_D_T.png",
+    ah: "/model/Bocas/A_H.png",
+    ei: "/model/Bocas/E_I.png",
     o: "/model/Bocas/O.png",
-    uq: "/model/Bocas/U _ Q.png",
+    uq: "/model/Bocas/U_Q.png",
   };
   let mouthAnimationTimer = null;
-  let currentSpeechUtterance = null;
 
   // --- Estado del módulo ---
   const Estado = {
@@ -105,7 +104,9 @@
     burbuja.className = "msg msg-" + autor; // autor: "user" | "bot" | "sys"
     burbuja.textContent = texto;
     $conversacion.appendChild(burbuja);
+    burbuja.scrollIntoView({ behavior: "smooth", block: "end" });
     $conversacion.scrollTop = $conversacion.scrollHeight;
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   }
 
   function setEstado(texto) {
@@ -139,20 +140,13 @@
     for (const caracter of caracteres) {
       const boca = elegirBocaPorCaracter(caracter);
       if (!boca) continue;
-      const anterior = secuencia.length ? secuencia[secuencia.length - 1].src : null;
-      if (boca.src !== anterior) {
+      if (!secuencia.length || secuencia[secuencia.length - 1].src !== boca.src) {
         secuencia.push(boca);
-      } else if (secuencia.length && secuencia[secuencia.length - 1].count < 3) {
-        secuencia[secuencia.length - 1].count += 1;
       }
-      if (secuencia.length >= 30) break;
+      if (secuencia.length >= 8) break;
     }
 
-    if (!secuencia.length) {
-      return [{ src: MOUTH_IMAGES.neutral, alt: "Boca neutral", count: 3 }];
-    }
-
-    return secuencia.map((item) => ({ src: item.src, alt: item.alt, count: item.count || 2 }));
+    return secuencia.length ? secuencia : [{ src: MOUTH_IMAGES.neutral, alt: "Boca neutral" }];
   }
 
   function detenerAnimacionBoca() {
@@ -160,38 +154,20 @@
       clearTimeout(mouthAnimationTimer);
       mouthAnimationTimer = null;
     }
-    if (currentSpeechUtterance) {
-      currentSpeechUtterance.onend = null;
-      currentSpeechUtterance.onerror = null;
-      currentSpeechUtterance = null;
-    }
-    setMouthImage(MOUTH_IMAGES.neutral, "Boca neutral");
   }
 
   function animarBocaDesdeTexto(texto) {
     detenerAnimacionBoca();
     const secuencia = construirSecuenciaBoca(texto);
     let indice = 0;
-    let repeticion = 0;
-    const frameDuration = 130;
-    const fallbackDuration = Math.max(1200, String(texto || "").length * 100);
-    const endTime = performance.now() + fallbackDuration;
 
     const siguiente = () => {
-      if (performance.now() >= endTime && !currentSpeechUtterance) {
-        detenerAnimacionBoca();
-        return;
+      if (indice >= secuencia.length) {
+        indice = 0; // reinicia en bucle durante la voz
       }
-
-      const paso = secuencia[indice];
-      setMouthImage(paso.src, paso.alt);
-      repeticion += 1;
-      if (repeticion >= paso.count) {
-        repeticion = 0;
-        indice = (indice + 1) % secuencia.length;
-      }
-
-      mouthAnimationTimer = setTimeout(siguiente, frameDuration);
+      setMouthImage(secuencia[indice].src, secuencia[indice].alt);
+      indice += 1;
+      mouthAnimationTimer = setTimeout(siguiente, 180);
     };
 
     siguiente();
@@ -210,19 +186,13 @@
         .getVoices()
         .find((v) => v.lang && v.lang.toLowerCase().startsWith("es"));
       if (vozEs) utter.voice = vozEs;
+      
+      // cuando termina la síntesis, detener la animación de boca
       utter.onend = () => {
-        if (currentSpeechUtterance === utter) {
-          currentSpeechUtterance = null;
-          detenerAnimacionBoca();
-        }
+        detenerAnimacionBoca();
+        setMouthImage(MOUTH_IMAGES.neutral, "Boca neutral");
       };
-      utter.onerror = () => {
-        if (currentSpeechUtterance === utter) {
-          currentSpeechUtterance = null;
-          detenerAnimacionBoca();
-        }
-      };
-      currentSpeechUtterance = utter;
+      
       window.speechSynthesis.speak(utter);
     } catch (_e) {
       // La voz es complementaria: si falla, el texto ya quedó en pantalla.
