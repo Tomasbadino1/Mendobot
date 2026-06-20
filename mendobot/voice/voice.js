@@ -99,14 +99,22 @@
   // ---------------------------------------------------------------------------
   // Render de conversación (RNF-02: legible y usable)
   // ---------------------------------------------------------------------------
+  function scrollConversacionToBottom() {
+    if (!$conversacion) return;
+    $conversacion.scrollTop = $conversacion.scrollHeight;
+  }
+
   function agregarMensaje(texto, autor) {
     const burbuja = document.createElement("div");
     burbuja.className = "msg msg-" + autor; // autor: "user" | "bot" | "sys"
     burbuja.textContent = texto;
     $conversacion.appendChild(burbuja);
-    burbuja.scrollIntoView({ behavior: "smooth", block: "end" });
-    $conversacion.scrollTop = $conversacion.scrollHeight;
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    setTimeout(() => {
+      if (burbuja.scrollIntoView) {
+        burbuja.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+      }
+      scrollConversacionToBottom();
+    }, 50);
   }
 
   function setEstado(texto) {
