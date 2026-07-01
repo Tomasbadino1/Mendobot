@@ -8,7 +8,7 @@ Stack Tecnológico Requerido: Python, librerías de NLP y frameworks de IA.
 Descripción Ejecutiva: MendoBot es un asistente conversacional inteligente orientado a resolver consultas institucionales y académicas de manera automatizada.
 Propuesta de Valor: Brindar respuestas inmediatas sobre planes de estudio, sedes y modalidades de cursado.
 2. Alcance del MVP (In Scope)
-Dominios de Consulta: Información sobre carreras (ej. Tecnicatura en Desarrollo de Software), planes de estudio, presencialidad/virtualidad y ubicación de sedes.
+Dominios de Consulta: Información sobre la carrera Tecnicatura en Desarrollo de Software, planes de estudio, presencialidad/virtualidad y ubicación de sedes.
 Interacciones: Chat de texto y soporte para comandos de voz.
 Interfaz: MVP funcional con una interfaz mínima pero usable.
 3. Fuera de Alcance (Out of Scope)
